@@ -30,8 +30,22 @@ const Data = {
     },
     {
         name: "status",
-        type: "text",
+        type: "select",
         defaultValue: "Waiting",
+        options: [
+          {
+          label: "waiting",
+          value: "waiting",
+          },
+          {
+            label: "Rejected",
+            value: "Rejected"
+          },
+          {
+            label: "Accepted",
+            value: "Accepted"
+          }
+        ]
     },
     {
         name: "tanggalPendaftaran",
