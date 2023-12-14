@@ -1,0 +1,4 @@
+<template>
+        <navbar/>
+        <registerForm/>
+</template>
