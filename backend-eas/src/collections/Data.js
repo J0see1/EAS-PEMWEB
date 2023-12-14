@@ -27,7 +27,6 @@ const Data = {
     {
         name: "asalSekolah",
         type: "text",
-        required: true
     },
     {
         name: "status",

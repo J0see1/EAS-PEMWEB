@@ -11,11 +11,11 @@
           <h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
             User Information
           </h2>
-          <div class="flex flex-col space-y-2">
-            <p><strong>Name:</strong> {{ name }}</p>
-            <p><strong>Email:</strong> {{ email }}</p>
-            <p><strong>School:</strong> {{ sekolah }}</p>
-            <p><strong>Status:</strong> {{ status }}</p>
+          <div class="flex flex-col space-y-2 text-white">
+            <p><strong>Name:</strong> {{ this.name }}</p>
+            <p><strong>Email:</strong> {{ this.email }}</p>
+            <p><strong>School:</strong> {{ this.sekolah }}</p>
+            <p><strong>Status:</strong> {{ this.status }}</p>
           </div>
         </div>
   
@@ -33,29 +33,37 @@
 import axios from 'axios';
 
 export default {
-  // ...other code remains unchanged
-
+    data() {
+      return {
+        name: '',
+        email: '',
+        sekolah: '',
+        status: '',
+      };
+    },
   methods: {
     async fetchData() {
-      try {
-        const response = await axios.get('http://localhost:3100/api/data');
+  try {
+    const response = await axios.get('http://localhost:3100/api/data');
 
-        if (response.data) {
-          // Assign fetched data to variables for use in your component
-          this.name = response.data.namaPanjang;
-          this.email = response.data.email;
-          this.sekolah = response.data.asalSekolah;
-          this.status = response.data.status;
-        }
-      } catch (error) {
-        console.error(error);
-        alert('Error occurred while fetching data');
-      }
+    if (response.data) {
+      this.name = response.data.namaPanjang;
+      this.email = response.data.email;
+      this.sekolah = response.data.asalSekolah;
+      this.status = response.data.status;
+
+      // Log the fetched data
+      console.log('Fetched data:', response.data);
     }
+  } catch (error) {
+    console.error(error);
+    alert('Error occurred while fetching data');
+  }
+}
+
   },
 
   mounted() {
-    // Fetch data when the component is mounted or whenever needed
     this.fetchData();
   }
 };

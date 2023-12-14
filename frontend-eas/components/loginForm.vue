@@ -1,67 +1,70 @@
 <template>
-    <section class="bg-gray-50 dark:bg-gray-900">
-      <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Sign in to your account
-            </h1>
-            <form @submit.prevent="loginAcc" class="space-y-4 md:space-y-6" action="#">
-              <div>
-                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your name</label>
-                <input v-model="name" type="text" name="name" id="name" ref="name" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Joko Susanto" required>
-              </div>
-              <div>
-                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email</label>
-                <input v-model="email" type="email" name="email" id="email" ref="email" placeholder="joko@mail.com" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-              </div>
-              <button type="submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Login</button>
-              <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don't have an account? <NuxtLink to="/" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Register here</NuxtLink>
-              </p>
-            </form>
-          </div>
+    <div class="max-w-md mx-auto mt-8 p-6 bg-gray-400 rounded-md shadow-md">
+      <h2 class="text-2xl text-white mb-4 font-semibold">Check Account</h2>
+      <form @submit.prevent="statusCheck">
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-white">Email:</label>
+          <input type="email" id="email" v-model="email" required class="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:border-blue-500" />
         </div>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
+          Check Status
+        </button>
+      </form>
+  
+      <div v-if="status !== null" class="mt-4">
+        <h3 class="text-lg font-semibold ">Registering Status:</h3>
+        <p class="mt-2 font-bold">{{ status }}</p>
       </div>
-    </section>
+    </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  
   export default {
     data() {
       return {
-        name: '',
-        email: '',
+        email: "",
+        status: null,
       };
     },
     methods: {
-        async loginAcc() {
+      async statusCheck() {
         try {
-            const response = await axios.post('http://localhost:3100/api/data', {
-            // Adjust field names based on server expectations
-            namaPanjang: this.name,
-            email: this.email,
-            // Add other required fields if needed
-            }, {
+          const apiUrl = `http://localhost:3100/api/data?email=${this.email}`;
+          const response = await fetch(apiUrl, {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json'
-            }
-            });
-
-            if (response.status === 200) {
-            // Redirect to '/index' if login is successful
-            this.$router.push('/index');
-            } else {
-            console.error('Login failed');
-            }
-        } catch (error) {
-            console.error('Error occurred:', error);
-        }
-        }
-    }
-  }
-  </script>
+              "Content-Type": "application/json",
+            },
+          });
   
+          if (response.ok) {
+            const responseData = await response.json();
+            console.log("API Response:", responseData);
+  
+            if (responseData.docs && responseData.docs.length > 0) {
+              const userDocument = responseData.docs.find(
+                (doc) => doc.email === this.email
+              );
+  
+              if (userDocument) {
+                this.status = userDocument.status;
+              } else {
+                console.error("Error: Email not found in the API response.");
+              }
+            } else {
+              console.error("Error: No documents found in the API response.");
+            }
+          } else {
+            console.error(
+              "Failed to fetch status. Status code:",
+              response.status
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      },
+    },
+  };
+  </script>
   
